@@ -4,11 +4,11 @@ import Sidebar from './__components/Sidebar';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-full relative">
+    <div className="h-full ">
       {/* Header */}
-      <div className="h-20 w-full fixed top-0 z-50">
+      <header className="h-20  w-full fixed top-0 z-50">
         <Navbar />
-      </div>
+      </header>
 
       {/* Sidebar */}
       <div className="hidden md:flex h-full w-56 fixed left-0 top-20">
@@ -16,9 +16,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       {/* Main Content */}
-      <main className="pt-20 md:pl-56">
-        {children}
-      </main>
+      <main className="pt-20 md:pl-56">{children}</main>
     </div>
   );
 };

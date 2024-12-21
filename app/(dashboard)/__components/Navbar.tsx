@@ -1,6 +1,7 @@
 import React from 'react'
 import NavbarRoutes from './NavbarRoutes'
 import Logo from './Logo'
+import MobileSidebar from './MobileSidebar'
 
 const Navbar = () => {
   return (
@@ -8,7 +9,7 @@ const Navbar = () => {
 
         {/* mobile routes */}
        <Logo/>
-        {/* <MobileSidebar/> */}
+        <MobileSidebar/>
 
         {/* sidebar routes */}
         <NavbarRoutes/>
