@@ -15,12 +15,16 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   title: z.string().min(1, { message: 'Job title cannot be empty' }),
 });
 
 const JobCreatePage = () => {
+  const router=useRouter()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,9 +44,9 @@ const JobCreatePage = () => {
         },
         withCredentials: true
       });
-      
-      console.log('Response:', response.data);
-      
+      router.push(`/admin/jobs/${response.data.id}`)
+      toast.success('Job Created')
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log('Error status:', error.response?.status);
@@ -87,7 +91,7 @@ const JobCreatePage = () => {
             />
 
             <div className="flex items-center gap-x-7">
-              <Link href={'/'}>
+              <Link href={'/admin/jobs'}>
                 <Button type="button" variant={'ghost'}>
                   Cancel
                 </Button>

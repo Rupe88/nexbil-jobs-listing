@@ -1,29 +1,19 @@
-import {
-  ClerkProvider,
-  // SignInButton,
-  // SignedIn,
-  // SignedOut,
-  // UserButton
-} from '@clerk/nextjs'
-import './globals.css'
+import { ClerkProvider } from '@clerk/nextjs';
+import './globals.css';
+import { ToastProvider } from '@/providers/toast-provider';
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <ClerkProvider>
       <html lang="en">
         <body>
-          {/* <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn> */}
+          <ToastProvider />
           {children}
         </body>
       </html>
     </ClerkProvider>
-  )
+  );
 }
