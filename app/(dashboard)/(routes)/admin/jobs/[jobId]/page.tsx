@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import Banner from '@/components/ui/banner';
 import { IconBadge } from '@/components/ui/icon-badge';
 import TitleForm from './__components/TitleForm';
+import CategoryForm from './__components/CategoryForm';
 const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
   //verify the mongodb id
   const validObjectRegex = /^[a-f\d]{24}$/i;
@@ -24,12 +25,23 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
       userId,
     },
   });
+  const categories = await db.category.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  });
+  console.log("found category",categories)
 
   if (!job) {
     return redirect('/admin/jobs');
   }
 
-  const requiredFields = [job.title, job.description, job.imageUrl];
+  const requiredFields = [
+    job.title,
+    job.description,
+    job.imageUrl,
+    job.categoryId,
+  ];
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
@@ -65,28 +77,37 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
 
       {/* warning before publishing the code  */}
 
-    {
-      !job.isPublished &&(
-        <Banner variant={"warning"}
-        label="This job is unpublished. it will not be visible in the job list"
+      {!job.isPublished && (
+        <Banner
+          variant={'warning'}
+          label="This job is unpublished. it will not be visible in the job list"
         />
-      )
-    }
+      )}
 
-    {/* container layout */}
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-16'>
-      <div>
-        {/* title */}
-        <div className='flex gap-x-2 items-center'>
-          <IconBadge icon={LayoutDashboard}/>
-          <h2 className='text-xl text-neutral-700'>Customize your job</h2>
+      {/* container layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+        <div>
+          {/* title */}
+          <div className="flex gap-x-2 items-center">
+            <IconBadge icon={LayoutDashboard} />
+            <h2 className="text-xl text-neutral-700">Customize your job</h2>
+          </div>
+          {/* title form  */}
+          <TitleForm initialData={job} jobId={job.id} />
 
+          {/* category form  */}
+          <CategoryForm
+            initialData={job}
+            jobId={job.id}
+            options={categories.map((category) => {
+              return {
+                label: category.name,
+                value: category.id,
+              };
+            })}
+          />
         </div>
-        {/* title form  */}
-        <TitleForm initialData={job} jobId={job.id}/>
       </div>
-
-    </div>
     </div>
   );
 };
