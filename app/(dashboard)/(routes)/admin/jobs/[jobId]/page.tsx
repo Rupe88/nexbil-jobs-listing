@@ -8,6 +8,7 @@ import Banner from '@/components/ui/banner';
 import { IconBadge } from '@/components/ui/icon-badge';
 import TitleForm from './__components/TitleForm';
 import CategoryForm from './__components/CategoryForm';
+import ImageForm from './__components/ImageForm';
 const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
   //verify the mongodb id
   const validObjectRegex = /^[a-f\d]{24}$/i;
@@ -106,6 +107,9 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
               };
             })}
           />
+
+          {/* image form */}
+          <ImageForm initialData={job} jobId={job.id}/>
         </div>
       </div>
     </div>
