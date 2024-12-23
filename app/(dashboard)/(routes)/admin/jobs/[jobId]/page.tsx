@@ -114,10 +114,8 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
 
 
           {/* short description  */}
-          <ShortDescription
-          
-          
-          />
+          <ShortDescription initialData={job} jobId={job.id} />
+
         </div>
       </div>
     </div>
