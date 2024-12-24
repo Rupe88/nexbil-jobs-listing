@@ -10,6 +10,10 @@ import TitleForm from './__components/TitleForm';
 import CategoryForm from './__components/CategoryForm';
 import ImageForm from './__components/ImageForm';
 import ShortDescription from './__components/short-description';
+import HourlyRateForm from './__components/HourlyRateForm';
+import ShiftTimingMode from './__components/ShiftTimingMode copy';
+import WorkModeForm from './__components/WorkModeForm';
+import WorkExperienceForm from './__components/WorkExperienceForm';
 const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
   //verify the mongodb id
   const validObjectRegex = /^[a-f\d]{24}$/i;
@@ -32,7 +36,7 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
       name: 'asc',
     },
   });
-  console.log("found category",categories)
+  console.log('found category', categories);
 
   if (!job) {
     return redirect('/admin/jobs');
@@ -110,12 +114,25 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
           />
 
           {/* image form */}
-          <ImageForm initialData={job} jobId={job.id}/>
-
+          <ImageForm initialData={job} jobId={job.id} />
 
           {/* short description  */}
           <ShortDescription initialData={job} jobId={job.id} />
 
+          {/* shift timing */}
+
+          <ShiftTimingMode initialData={job} jobId={job.id} />
+
+          {/* hourly rate  */}
+          <HourlyRateForm initialData={job} jobId={job.id} />
+
+          {/* work mode form  */}
+
+          <WorkModeForm initialData={job} jobId={job.id} />
+
+          {/* work experience form */}
+
+          <WorkExperienceForm initialData={job} jobId={job.id} />
         </div>
       </div>
     </div>

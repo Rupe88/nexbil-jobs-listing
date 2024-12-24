@@ -1,14 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Image as ImageIcon, Pencil } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import axios from 'axios';
-import toast from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,27 +15,52 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import ImageUpload from '@/components/ui/image-upload';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { Job } from '@prisma/client';
+import { cn } from '@/lib/utils';
+import { Combobox } from '@/components/ui/combo-box';
 
 const formSchema = z.object({
-  imageUrl: z.string().min(1, { message: 'Image URL is required' }),
+  yearOfExperience: z.string().min(1),
 });
 
-interface ImageFormProps {
-  initialData: {
-    imageUrl?: string | null
-  };
+interface WorkModeFormProps {
+  initialData: Job;
   jobId: string;
 }
 
-const ImageForm = ({ initialData, jobId }: ImageFormProps) => {
+const options = [
+  {
+    value: '0',
+    label: 'Fresher',
+  },
+  {
+    value: '2',
+    label: '0-2 years',
+  },
+  {
+    value: '3',
+    label: '2-4 years',
+  },
+  {
+    value: '5',
+    label: '5+ years',
+  },
+  {
+    value: '5-10',
+    label: '10+ years',
+  },
+];
+
+const WorkExperienceForm = ({ initialData, jobId }: WorkModeFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      imageUrl: initialData?.imageUrl || '',
+      yearOfExperience: initialData?.yearOfExperience || '',
     },
   });
 
@@ -46,54 +68,56 @@ const ImageForm = ({ initialData, jobId }: ImageFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/jobs/${jobId}`, values);
-      toast.success('Job updated successfully');
+      const response = await axios.patch(`/api/jobs/${jobId}`, values);
+      console.log(response);
+      toast.success('Job Updated');
       toggleEditing();
+      setIsEditing(false);
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error('Something went wrong');
+      toast.error('something went wrong');
     }
   };
 
   const toggleEditing = () => {
     setIsEditing((current) => !current);
-    // if (isEditing) {
-    //   form.reset(initialData);
-    // }
+    if (isEditing) {
+      form.reset({
+        yearOfExperience: initialData?.yearOfExperience || '',
+      });
+    }
   };
+
+  const selectedOption = options.find(
+    (option) => option.value === initialData.yearOfExperience
+  );
 
   return (
     <div className="mt-6 border bg-neutral-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Job Image
+        Work Experience
         <Button onClick={toggleEditing} variant="ghost">
           {isEditing ? (
-            'Cancel'
+            <>Cancel</>
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit image
+              Edit
             </>
           )}
         </Button>
       </div>
 
       {!isEditing && (
-        !initialData.imageUrl ? (
-          <div className="flex items-center justify-center h-60 bg-neutral-200 rounded-md">
-            <ImageIcon className="h-10 w-10 text-neutral-500" />
-          </div>
-        ) : (
-          <div className="relative aspect-video mt-2">
-            <Image
-              alt="Upload"
-              fill
-              className="object-cover rounded-md"
-              src={initialData.imageUrl}
-            />
-          </div>
-        )
+        <p
+          className={cn(
+            'text-sm mt-2',
+            !initialData?.yearOfExperience && 'text-neutral-500 italic'
+          )}
+        >
+          {selectedOption?.label || 'No Experience added'}
+        </p>
       )}
 
       {isEditing && (
@@ -104,15 +128,15 @@ const ImageForm = ({ initialData, jobId }: ImageFormProps) => {
           >
             <FormField
               control={form.control}
-              name="imageUrl"
+              name="yearOfExperience"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <ImageUpload
+                    <Combobox
+                      heading="Work Experience"
+                      options={options}
                       value={field.value}
-                      disabled={isSubmitting}
                       onChange={field.onChange}
-                      onRemove={() => field.onChange('')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -120,12 +144,8 @@ const ImageForm = ({ initialData, jobId }: ImageFormProps) => {
               )}
             />
             <div className="flex items-center gap-x-2">
-              <Button
-                disabled={!isValid || isSubmitting}
-                type="submit"
-                variant="default"
-              >
-                Save changes
+              <Button disabled={!isValid || isSubmitting} type="submit">
+                Save
               </Button>
             </div>
           </form>
@@ -135,4 +155,4 @@ const ImageForm = ({ initialData, jobId }: ImageFormProps) => {
   );
 };
 
-export default ImageForm;
+export default WorkExperienceForm;
