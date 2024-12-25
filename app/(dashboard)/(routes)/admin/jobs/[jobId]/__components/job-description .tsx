@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Lightbulb, Loader2, Pencil } from 'lucide-react';
+import { Copy, Lightbulb, Loader2, Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -21,6 +21,8 @@ import { Job } from '@prisma/client';
 // import { Textarea } from '@/components/ui/textarea';
 import getGenerativeAIResponse from '@/scripts/ai-studio';
 import { Editor } from '@/components/ui/editor';
+import { cn } from '@/lib/utils';
+import { Preview } from '@/components/ui/preview';
 
 const formSchema = z.object({
   description: z.string().min(1),
@@ -33,7 +35,7 @@ interface JobDescriptionProps {
 
 const JobDescription = ({ initialData, jobId }: JobDescriptionProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [aiValue, setAiValue] = useState(null);
+  const [aiValue, setAiValue] = useState('');
   const [roleName, setRoleName] = useState('');
   const [skills, setSkills] = useState('');
 
@@ -77,20 +79,26 @@ const JobDescription = ({ initialData, jobId }: JobDescriptionProps) => {
     try {
       setIsPropmting(true);
       const customPrompt = `Could you please draft a job requirements document for the position of ${roleName}? The job description should include roles & responsibilities, key features, and details about the role. The required skills should include proficiency in ${skills}. Additionally, you can list any optional skill related to job. Thanks!`;
-    
-    await getGenerativeAIResponse(customPrompt).then((data)=>{
-      console.log(data)
-      data=data.replace(/^'|'$/g, "")
-      const cleanedText=data.replace(/[\*\[\]]/g, "");
-      form.setValue("description", cleanedText)
-      
-      // console.log(cleanedText)
-      setIsPropmting(false)
-    })
+
+      await getGenerativeAIResponse(customPrompt).then((data) => {
+        console.log(data);
+        data = data.replace(/^'|'$/g, '');
+        const cleanedText = data.replace(/[\*\[\]#]/g, '');
+        form.setValue('description', cleanedText);
+        setAiValue(cleanedText);
+
+        // console.log(cleanedText)
+        setIsPropmting(false);
+      });
     } catch (error) {
       console.log(error);
       toast.error('something went wrong');
     }
+  };
+
+  const onCopy = () => {
+    navigator.clipboard.writeText(aiValue);
+    toast.success('Copied to clipboard');
   };
 
   return (
@@ -110,7 +118,19 @@ const JobDescription = ({ initialData, jobId }: JobDescriptionProps) => {
       </div>
 
       {!isEditing && (
-        <p className="text-neutral-500">{initialData?.description}</p>
+        // <p className="text-neutral-500">{initialData?.description}</p>
+        <div
+          className={cn(
+            'text-sm mt-2',
+            !initialData.description && 'text-neutral-500 italic'
+          )}
+        >
+
+          {!initialData.description && "No Description"}
+          {initialData.description && (
+            <Preview value={initialData.description}/>
+          )}
+        </div>
       )}
 
       {isEditing && (
@@ -150,13 +170,18 @@ const JobDescription = ({ initialData, jobId }: JobDescriptionProps) => {
           </p>
 
           {aiValue && (
-
-            <div calssName="w-full h-96 max-h-96 rounded-md bg-white overflow-y-scroll p-3 relative mt-4 text-muted-400">
+            <div className="w-full h-96 max-h-96 rounded-md bg-white overflow-y-scroll p-3 relative mt-4 text-muted-400">
               {aiValue}
 
+              <Button
+                onClick={onCopy}
+                className="absolute top-3 right-3 z-10"
+                variant={'outline'}
+                size={'icon'}
+              >
+                <Copy className="w-4 h-4 " />
+              </Button>
             </div>
-
-
           )}
           <Form {...form}>
             <form

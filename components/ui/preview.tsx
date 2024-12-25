@@ -11,9 +11,9 @@ interface PreviewProps{
 
 }
 
-export const Editor=({ value}:PreviewProps)=>{
+export const Preview=({ value}:PreviewProps)=>{
     const ReactQuill=useMemo(()=>dynamic(()=>import("react-quill"), {ssr:false}),[])
     return <div className='bg-white'>
-        <ReactQuill value={value} theme='readOnly'/>
+        <ReactQuill value={value} theme='snow'/>
     </div>
 }
