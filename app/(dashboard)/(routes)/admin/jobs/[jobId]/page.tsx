@@ -15,7 +15,6 @@ import ShiftTimingMode from './__components/ShiftTimingMode copy';
 import WorkModeForm from './__components/WorkModeForm';
 import WorkExperienceForm from './__components/WorkExperienceForm';
 import JobDescription from './__components/job-description ';
-// import JobDescription from './__components/job-description ';
 const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
   //verify the mongodb id
   const validObjectRegex = /^[a-f\d]{24}$/i;
