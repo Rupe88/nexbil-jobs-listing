@@ -1,7 +1,11 @@
 import JobPublishAction from '@/app/(dashboard)/(routes)/admin/jobs/[jobId]/__components/JobPublishAction';
 import { db } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
-import { ArrowLeft, LayoutDashboard } from 'lucide-react';
+import {
+  ArrowLeft,
+  LayoutDashboard,
+  ListChecks,
+} from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Banner from '@/components/ui/banner';
@@ -15,6 +19,7 @@ import ShiftTimingMode from './__components/ShiftTimingMode copy';
 import WorkModeForm from './__components/WorkModeForm';
 import WorkExperienceForm from './__components/WorkExperienceForm';
 import JobDescription from './__components/job-description ';
+import TagsForm from './__components/TagsForm';
 const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
   //verify the mongodb id
   const validObjectRegex = /^[a-f\d]{24}$/i;
@@ -141,16 +146,20 @@ const JobDetailsPage = async ({ params }: { params: { jobId: string } }) => {
         </div>
 
         {/* right container */}
-        <div className="">
-          
+        <div className="space-y-6">
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={ListChecks} />
+              <h2 className="text-xl text-neutral-700">Job Requirements</h2>
+            </div>
+
+            <TagsForm initialData={job} jobId={job.id}/>
+          </div>
         </div>
 
         {/* description */}
-        <div className='cols-span-2'>
-          <JobDescription
-          initialData={job}
-          jobId={job.id}
-          />
+        <div className="cols-span-2">
+          <JobDescription initialData={job} jobId={job.id} />
         </div>
       </div>
     </div>
