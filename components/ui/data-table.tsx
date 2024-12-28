@@ -8,8 +8,11 @@ import {
   useReactTable,
   getSortedRowModel,
   getPaginationRowModel,
+  ColumnFiltersState,
+  getFilteredRowModel,
 } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -23,13 +26,18 @@ import React from "react"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  searchKey:string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  searchKey
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const table = useReactTable({
     data,
     columns,
@@ -37,13 +45,34 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel:getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,  // Add this
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
+      columnFilters
     },
   })
 
   return (
   <div>
+
+    {/* search */}
+    <div className="flex items-center py-4">
+        <Input
+          placeholder={`Filter ${searchKey}`}
+          value={table.getColumn(searchKey)?.getFilterValue() as string}
+          onChange={(event) =>
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+   
+      </div>
+ 
+
+
+    {/*  */}
+
       <div className="rounded-md border">
       <Table>
         <TableHeader>

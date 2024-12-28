@@ -8,6 +8,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import {format} from "date-fns"
+// import { title } from 'process';
 const JobsPageOverview = async() => {
 
   const {userId}=await auth();
@@ -53,7 +54,7 @@ const formatedJobs:JobsColumn[]=jobs.map((job)=>({
 
       {/* datatable list of jobs */}
       <div className="mt-6">
-        <DataTable columns={columns} data={formatedJobs}/>
+        <DataTable columns={columns} data={formatedJobs} searchKey={"title"}/>
       </div>
 
 
