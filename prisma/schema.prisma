@@ -16,7 +16,7 @@ datasource db {
 }
 
 
-model job{
+model Job{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userId String
   title String
@@ -30,6 +30,50 @@ model job{
   hourlyRate String?
   yearOfExperience String?
   workMode String?
+  categoryId String? @db.ObjectId
+  category Category? @relation(fields: [categoryId], references: [id])
+  companyId String? @db.ObjectId
+  company Company? @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+
+// for query optimization to map the value
+  @@index([categoryId])
+  @@index([companyId])
+
+}
+
+
+model Company{
+   id String @id @default(auto()) @map("_id") @db.ObjectId
+   userId String
+   name String
+  description String?
+  logo String?
+  coverImage String?
+  mail String?
+  website String?
+  linkedin String?
+  address_line_1 String?
+  address_line_2 String?
+  city String?
+  state String?
+  zipcode String?
+  jobs Job[]
+  followers String[]
+  overview String?
+  whyJoinUs String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+
+}
+
+model Category{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique
+  jobs Job[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
